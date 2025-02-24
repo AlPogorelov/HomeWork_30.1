@@ -1,5 +1,6 @@
 from django.db import models
 
+
 from materials.models import Lesson
 
 
@@ -10,7 +11,7 @@ class Course(models.Model):
     description = models.TextField(verbose_name='Описание')
 
     lessons = models.ManyToManyField(Lesson)
-
+    
     class Meta:
         verbose_name = 'Курс'
         verbose_name_plural = 'Курсы'
