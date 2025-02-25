@@ -9,4 +9,4 @@ class PaymentsList(generics.ListAPIView):
     filter_backends = [DjangoFilterBackend]
     search_fields = []
     ordering_fields = ['peid_materials', 'payment_method', 'date_pay']
-    filterset_fields = ()
+    filterset_fields = ['peid_materials', 'payment_method', 'date_pay']
