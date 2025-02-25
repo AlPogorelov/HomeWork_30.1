@@ -1,8 +1,6 @@
 from django.db import models
 
 
-from materials.models import Lesson
-
 
 class Course(models.Model):
 
@@ -10,7 +8,6 @@ class Course(models.Model):
     preview = models.ImageField(upload_to='course/preview/', verbose_name='Превью', blank=True, null=True, help_text="Превью для курса")
     description = models.TextField(verbose_name='Описание')
 
-    lessons = models.ManyToManyField(Lesson)
     
     class Meta:
         verbose_name = 'Курс'

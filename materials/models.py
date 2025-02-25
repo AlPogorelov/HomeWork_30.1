@@ -12,7 +12,6 @@ class Lesson(models.Model):
 
     course = models.ForeignKey(Course, related_name='lessons', on_delete=models.CASCADE, verbose_name='Курс')
 
-
     class Meta:
         verbose_name = 'Урок'
         verbose_name_plural = 'Уроки'
