@@ -9,6 +9,7 @@ packages = [{include = "homework_30"}]
 [tool.poetry.dependencies]
 python = "^3.12"
 python-dotenv = "^1.0.1"
+django-filter = "^25.1"
 
 
 [build-system]

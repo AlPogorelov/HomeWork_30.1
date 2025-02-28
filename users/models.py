@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.auth.models import AbstractUser
 
 
 class User(AbstractUser):
@@ -19,3 +19,15 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+
+class Payments(models.Model):
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='пользователь')
+    date_pay = models.DateTimeField(verbose_name='дата оплаты', blank=True, null=True)
+    peid_materials = models.ForeignKey('contenttypes.ContentType', on_delete=models.CASCADE, verbose_name='оплаченный материал')
+    payment_amount = models.FloatField(verbose_name='сумма платежа')
+    payment_method = models.CharField(choices=[
+        ('Cash', 'Cash'),
+        ('Transfer', 'Transfer')
+    ])
