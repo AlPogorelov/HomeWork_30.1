@@ -1,6 +1,7 @@
 from django.db import models
 
 from courses.models import Course
+from users.models import User
 
 
 class Lesson(models.Model):
@@ -11,6 +12,7 @@ class Lesson(models.Model):
     video_url = models.URLField(verbose_name='Ссылка на видео')
 
     course = models.ForeignKey(Course, related_name='lessons', on_delete=models.CASCADE, verbose_name='Курс')
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Автор материала', blank=True, null=True)
 
     class Meta:
         verbose_name = 'Урок'
