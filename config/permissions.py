@@ -1,10 +1,10 @@
 from rest_framework.permissions import BasePermission
 
 
-class IsOwnerOrStaff(BasePermission):
+class IsOwnerOrModer(BasePermission):
 
     def has_permission(self, request, view):
-        if request.user.is_staff:
+        if request.user.groups.filter(name='Moder').exists():
             return True
         return request.user == view.get_object().owner
 

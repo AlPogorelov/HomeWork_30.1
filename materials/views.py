@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from config.permissions import IsOwnerOrStaff, IsOwner, NotStaff
+from config.permissions import IsOwnerOrStaff, IsOwner, NotStaff, IsOwnerOrModer
 from .models import Lesson
 from .serializers import LessonSerializer
 from rest_framework import generics
@@ -30,10 +30,10 @@ class LessonRetrieveAPIView(generics.RetrieveAPIView):
 class LessonUpdateAPIView(generics.UpdateAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
-    permission_classes = [IsOwner]
+    permission_classes = [IsOwnerOrModer]
 
 
 class LessonDestroyAPIView(generics.DestroyAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
-    permission_classes = [IsOwner]
+    permission_classes = [IsOwnerOrModer]
