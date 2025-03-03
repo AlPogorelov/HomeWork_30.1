@@ -26,7 +26,7 @@ class CourseViewSet(viewsets.ViewSet):
         if self.action == 'create':
             self.permission_classes = [IsAuthenticated & NotStaff]
 
-        elif self.action == 'update' or 'partial_update' or 'destroy':
+        elif self.action == 'update' or 'partial_update' or 'destroy' or 'retrieve':
             self.permission_classes = [IsOwnerOrModer]
 
         return [permission() for permission in self.permission_classes]
