@@ -52,11 +52,13 @@ class Payments(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='пользователь')
     date_pay = models.DateTimeField(verbose_name='дата оплаты', blank=True, null=True)
     peid_materials = models.ForeignKey('contenttypes.ContentType', on_delete=models.CASCADE, verbose_name='оплаченный материал')
-    payment_amount = models.FloatField(verbose_name='сумма платежа')
+    payment_amount = models.PositiveIntegerField(verbose_name='сумма платежа')
     payment_method = models.CharField(choices=[
         ('Cash', 'Cash'),
         ('Transfer', 'Transfer')
     ])
+    link_pay = models.URLField(max_length=400, blank=True, null=True, verbose_name='Ссылка на оплату')
+    session_id = models.CharField(max_length=255, blank=True, null=True, verbose_name='id сессии')
 
 
 class Subscription(models.Model):
