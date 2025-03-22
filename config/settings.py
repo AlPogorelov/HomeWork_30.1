@@ -14,11 +14,12 @@ from datetime import timedelta
 from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -43,11 +44,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
+    'drf_yasg',
+    'rest_framework_simplejwt',
+    'django_filters',
+
     'users',
     'courses',
     'materials',
-    'django_filters',
-    'rest_framework_simplejwt',
+      
 
 ]
 
@@ -159,3 +163,6 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'users.User'
+
+STRIPE_API_KEY = os.getenv('STRIPE_API_KEY')
+STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
