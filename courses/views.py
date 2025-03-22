@@ -6,6 +6,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from config.permissions import NotStaff, IsOwnerOrModer
 from courses.models import Course
 from courses.serializers import CourseSerializer
+from users.tasks import send_course_update_email
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -32,3 +33,8 @@ class CourseViewSet(viewsets.ModelViewSet):
         context = super().get_serializer_context()
         context['request'] = self.request
         return context
+
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        # Запускаем асинхронную задачу
+        send_course_update_email.delay(instance.id)
