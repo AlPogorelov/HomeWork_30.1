@@ -1,0 +1,110 @@
+version: '3.9'
+
+services:
+  web:
+    build: .
+    command:  python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+      - static_volume:/code/static
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+
+# PostgresSQL
+  db:
+    image: postgres:16.0
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMS-SHELL", "pg_isreary -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    ports:
+      - "5432:5432"
+    networks:
+      backend_network:
+
+# Celery Beat
+  celery_beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A your_project_name beat --loglevel=info
+    env_file:
+      - .env
+    depends_on:
+      - backend
+      - redis
+    networks:
+      backend_network:
+
+# Redis
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - backend_network
+
+# Django Backend
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python manage.py runserver 0.0.0.0:8000
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - static_volume:/app/static
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - backend_network
+
+# Celery Worker
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A your_project_name worker --loglevel=info
+    env_file:
+      - .env
+    depends_on:
+      - backend
+      - redis
+    networks:
+      - backend_network
+
+  # Celery Beat
+  celery_beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A your_project_name beat --loglevel=info
+    env_file:
+      - .env
+    depends_on:
+      - backend
+      - redis
+    networks:
+      - backend_network
+
+
+
+networks:
+  backend_network:
+
+volumes:
+  postgres_data:
+  static_volume:
