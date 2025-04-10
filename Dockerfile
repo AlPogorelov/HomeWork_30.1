@@ -7,15 +7,19 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+RUN pip install poetry
+
+COPY pyproject.toml poetry.lock ./
+
+RUN poetry config virtualenvs.create false && poetry install --no-root
+
 COPY requirements.txt ./
 
-RUN pip install -- no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-ENV SECRET_KEY="django-insecure-ine9%aw^=!ptp3&nfr)97h-7avugu2^nrkm77jg=-d2xd1v(8d"
-ENV CELERY_BROKER_URL='redis://localhost:6379'
-ENV CELERY_BACKEND='redis://localhost:6379'
+
 
 RUN mkdir -p /app/media
 
