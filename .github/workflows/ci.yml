@@ -5,6 +5,11 @@ on: [push, pull_request]
 jobs:
   lint:
     runs-on: ubuntu-latest
+
+    env:
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      DEBUG: "False"
+
     steps:
       - name: Check out code
         uses: actions/checkout@v3
