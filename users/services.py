@@ -1,6 +1,3 @@
-import requests
-from django.conf import settings
-from rest_framework import status
 from config.settings import STRIPE_API_KEY
 import stripe
 
