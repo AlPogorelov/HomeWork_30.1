@@ -103,9 +103,6 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_KEY }}
           log-public-key: true
 
-      - name: Debug public key
-        run: ssh-add -L
-
       - name: Deploy to server
         run: |
           ssh -o StrictHostKeyChecking=on ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
