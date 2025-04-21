@@ -111,17 +111,11 @@ jobs:
           echo "Проверка подключения:"
           ssh -T git@github.com
 
-      - name: Check server connectivity
-        run: |
-          ping -c 3 ${{ secrets.SERVER_IP }}
-          nc -zv ${{ secrets.SERVER_IP }} 22
-          curl ifconfig.me
-
       - name: Deploy to server
         run: |
           ssh -o StrictHostKeyChecking=no \              
               -o UserKnownHostsFile=/dev/null \
-              user@51.250.17.212 << 'EOF'
+              ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
           sudo docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
           sudo docker stop myapp || true
           sudo docker rm myapp || true
