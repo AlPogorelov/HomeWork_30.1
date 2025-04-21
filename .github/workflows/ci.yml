@@ -105,15 +105,15 @@ jobs:
           ssh-public-key: ${{ secrets.SSH_PUB_KEY }}
 
       - name: Debug SSH keys
-        run:
+        run: |
           echo "Публичный ключ:"
-          ssh-add -L  
+          ssh-add -L
           echo "Проверка подключения:"
           ssh -T git@github.com
 
       - name: Deploy to server
         run: |
-          ssh -o StrictHostKeyChecking=no \              
+          ssh -T -o StrictHostKeyChecking=no \
               -o UserKnownHostsFile=/dev/null \
               ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
           docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
