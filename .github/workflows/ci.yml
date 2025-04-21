@@ -121,7 +121,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no \              
               -o UserKnownHostsFile=/dev/null \
-              ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+              user@51.250.17.212 << 'EOF'
           sudo docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
           sudo docker stop myapp || true
           sudo docker rm myapp || true
