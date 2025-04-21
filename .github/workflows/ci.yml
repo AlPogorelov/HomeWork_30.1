@@ -104,12 +104,12 @@ jobs:
             ${{ secrets.SSH_KEY }}
           ssh-public-key: ${{ secrets.SSH_PUB_KEY }}
 
-      - name: Debug SSH keys
-        run: |
-          echo "Публичный ключ:"
-          ssh-add -L
-          echo "Проверка подключения:"
-          ssh -T git@github.com
+#      - name: Debug SSH keys
+#        run: |
+#          echo "Публичный ключ:"
+#          ssh-add -L
+#          echo "Проверка подключения:"
+#          ssh -T git@github.com
 
       - name: Deploy to server
         run: |
