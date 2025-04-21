@@ -111,9 +111,16 @@ jobs:
           echo "Проверка подключения:"
           ssh -T git@github.com
 
+      - name: Check server connectivity
+        run: |
+          ping -c 3 ${{ secrets.SERVER_IP }}
+          nc -zv ${{ secrets.SERVER_IP }} 22
+          curl ifconfig.me
+
       - name: Deploy to server
         run: |
           ssh -o StrictHostKeyChecking=no \
+              -o ConnectTimeout=30 \
               -o UserKnownHostsFile=/dev/null \
               ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
           docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
