@@ -8,8 +8,7 @@ from config import settings
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 
 # Создание экземпляра объекта Celery
-app = Celery('config', broker='redis://redis:6379/0',
-    backend='redis://redis:6379/0')
+app = Celery('config')
 
 # Загрузка настроек из файла Django
 app.config_from_object('django.conf:settings', namespace='CELERY')
