@@ -1,8 +1,8 @@
 FROM nginx:latest
 
-RUN mkdir -p /app/staticfiles
-
 COPY nginx.conf /etc/nginx/nginx.conf
-COPY mime.types /etc/nginx/mime.types  
+COPY mime.types /etc/nginx/mime.types
+
+RUN mkdir -p /app/staticfiles
 
 EXPOSE 80
