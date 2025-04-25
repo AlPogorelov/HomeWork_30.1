@@ -1,30 +1,30 @@
 services:
   web:
-    build: .
+    build: .  # Сборка из Dockerfile в корне проекта
     command: sh -c "/app/wait-for-db.sh && python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:8000"
     volumes:
-      - static_volume:/app/staticfiles
+      - static_volume:/app/staticfiles  # Том для статических файлов
     env_file:
-      - .env
+      - .env  # Файл с переменными окружения
     environment:
       - SECRET_KEY=${SECRET_KEY}
       - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
     depends_on:
       db:
-        condition: service_healthy
+        condition: service_healthy  # Ожидание готовности БД
       redis:
         condition: service_started
     networks:
       - backend_network
 
   nginx:
-    build: ./nginx
+    build: ./nginx  # Dockerfile для Nginx в папке ./nginx
     ports:
-      - "80:80"
+      - "80:80"  # Проброс порта 80
     volumes:
-      - static_volume:/app/staticfiles
+      - static_volume:/app/staticfiles  # Общий том со статикой
     depends_on:
-      - web
+      - web  # Зависимость от сервиса web
     networks:
       - backend_network
 
@@ -35,9 +35,9 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data  # Сохранение данных БД
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -47,21 +47,21 @@ services:
   redis:
     image: redis
     expose:
-      - "6379"
-    env_file:
-      - .env
+      - "6379"  # Открываем порт для других сервисов
     volumes:
-      - redis_data:/data
+      - redis_data:/data  # Сохранение данных Redis
+    networks:
+      - backend_network
 
   celery_worker:
     build: .
-    command: celery -A config worker --loglevel=INFO
-
+    command: celery -A config worker --loglevel=INFO --uid=1000  # Запуск от непривилегированного пользователя
     env_file:
       - .env
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    user: "1000:1000"  # UID:GID пользователя
     depends_on:
       - redis
       - db
@@ -70,12 +70,15 @@ services:
 
   celery_beat:
     build: .
-    command: celery -A config beat --loglevel=info
+    command: celery -A config beat --loglevel=info --uid=1000
     env_file:
       - .env
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - CELERYBEAT_SCHEDULE=/app/celery_beat/celerybeat-schedule  # Путь к файлу расписания
+    volumes:
+      - ./celery_beat:/app/celery_beat  # Том для файла расписания
+    user: "1000:1000"
     depends_on:
       - redis
       - db

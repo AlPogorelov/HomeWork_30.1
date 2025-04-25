@@ -1,9 +1,11 @@
-# ./nginx/Dockerfile
-FROM nginx:alpine
+FROM nginx:latest
 
-RUN rm /etc/nginx/conf.d/default.conf
 
 COPY nginx.conf /etc/nginx/nginx.conf
+COPY mime.types /etc/nginx/mime.types
 
 
-RUN mkdir -p /app/staticfiles
+COPY html/ /usr/share/nginx/html/
+
+
+EXPOSE 80
