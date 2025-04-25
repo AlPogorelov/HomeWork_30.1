@@ -53,35 +53,23 @@ services:
     networks:
       - backend_network
 
-  celery_worker:
-    build: .
-    command: celery -A config worker --loglevel=INFO  # Запуск от непривилегированного пользователя
-    env_file:
-      - .env
-    environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
-    depends_on:
-      - redis
-      - db
-    networks:
-      - backend_network
-
   celery_beat:
     build: .
-    command: celery -A config beat --loglevel=info --uid=1000
-    env_file:
-      - .env
-    environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERYBEAT_SCHEDULE=/app/celery_beat/celerybeat-schedule  # Путь к файлу расписания
+    command: celery -A config beat --loglevel=info
+    user: "1000:1000"  # Совпадает с UID/GID из Dockerfile
     volumes:
-      - ./celery_beat:/app/celery_beat  # Том для файла расписания
+      - ./celery_beat:/app/celery_beat  # Том для расписания
     depends_on:
       - redis
       - db
-    networks:
-      - backend_network
+
+  celery_worker:
+    build: .
+    command: celery -A config worker --loglevel=INFO
+    user: "1000:1000"
+    depends_on:
+      - redis
+      - db
 
 networks:
   backend_network:
