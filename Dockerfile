@@ -1,30 +1,32 @@
 FROM python:3.12
 
-# 1. Установка зависимостей и настройка от root
+# Установка системных зависимостей
 USER root
-
 RUN apt-get update && \
     apt-get install -y gcc libpq-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# 2. Создание пользователя с явным UID/GID
-RUN adduser --disabled-password --gecos '' --uid 1000 --gid 1000 celeryuser
+# Создаем группу с GID 1000
+RUN groupadd -g 1000 celerygroup
 
-# 3. Все операции с правами выполняем ОТ root ДО переключения пользователя
+# Создаем пользователя с UID 1000 и добавляем в группу
+RUN useradd --uid 1000 --gid 1000 --create-home --shell /bin/bash celeryuser
+
+# Настраиваем права ДО переключения пользователя
 RUN mkdir -p /app/media && \
-    chown celeryuser:celeryuser /app/media
+    chown celeryuser:celerygroup /app/media
 
-# 4. Копирование файлов с правильным владельцем
-COPY --chown=celeryuser:celeryuser . /app
+# Копируем файлы с правильным владельцем
+COPY --chown=celeryuser:celerygroup . /app
 
-# 5. Настройка прав для скриптов
+# Настраиваем права для скриптов
 RUN chmod +x /app/wait-for-db.sh
 
-# 6. Переключение на непривилегированного пользователя
+# Переключаемся на непривилегированного пользователя
 USER celeryuser
 
-# 7. Рабочая директория и остальные инструкции
+# Установка зависимостей и запуск
 WORKDIR /app
 RUN pip install poetry && \
     poetry config virtualenvs.create false && \
