@@ -3,6 +3,9 @@ FROM python:3.12
 # Установка системных зависимостей от root
 USER root
 
+RUN mkdir -p /var/run/celery && \
+    chown -R celeryuser:celeryuser /var/run/celery
+
 RUN apt-get update && \
     apt-get install -y gcc libpq-dev && \
     apt-get clean && \
