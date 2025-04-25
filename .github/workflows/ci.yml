@@ -109,9 +109,16 @@ jobs:
           ssh -T -o StrictHostKeyChecking=no \
               -o UserKnownHostsFile=/dev/null \
               ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
-          docker stop myapp || true
-          docker rm myapp || true
+          cd /var/HomeWork_30.1/
+          git checkout feature/Docker_init
+          git pull
           sysctl vm.overcommit_memory = 1
-          docker run -d --name myapp -p 80:8000 ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
+          docker compose  up —build
+#          docker-compose build
+#          docker-compose pull ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
+#          docker stop myapp || true
+#          docker rm myapp || true
+#          sysctl vm.overcommit_memory = 1
+#          docker
+#          docker run -d --name myapp -p 80:8000 ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
           EOF
