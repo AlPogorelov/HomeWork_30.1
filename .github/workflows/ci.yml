@@ -113,12 +113,10 @@ jobs:
           git checkout feature/Docker_init
           git pull
           sysctl vm.overcommit_memory = 1
-          docker compose  up —build
-#          docker-compose build
-#          docker-compose pull ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
+          docker-compose up -build
+#          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
 #          docker stop myapp || true
 #          docker rm myapp || true
-#          sysctl vm.overcommit_memory = 1
-#          docker
+#          vm.overcommit_memory = 1
 #          docker run -d --name myapp -p 80:8000 ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
           EOF
