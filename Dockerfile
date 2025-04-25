@@ -7,8 +7,6 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Создание пользователя (ОДИН РАЗ)
-RUN adduser --disabled-password --gecos '' --uid 1000 --gid 1000 celeryuser
 
 WORKDIR /app
 
