@@ -1,45 +1,44 @@
-FROM python:3.12
+ROM python:3.12
 
-# Установка системных зависимостей от root
-USER root
+# 1. Создаем пользователя и группу ПЕРВЫМ ДЕЛОМ
+RUN groupadd -g 1000 celerygroup && \
+    useradd --uid 1000 --gid 1000 --create-home --shell /bin/bash celeryuser
 
-RUN mkdir -p /var/run/celery && \
-    chown -R celeryuser:celeryuser /var/run/celery
-
+# 2. Установка системных зависимостей
 RUN apt-get update && \
     apt-get install -y gcc libpq-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Создаем группу и пользователя
-RUN groupadd -g 1000 celerygroup && \
-    useradd --uid 1000 --gid 1000 --create-home --shell /bin/bash celeryuser
+# 3. Создаем директории и назначаем права
+RUN mkdir -p /var/run/celery /app/media && \
+    chown -R celeryuser:celerygroup /var/run/celery /app/media
 
-# Настраиваем рабочие директории
-RUN mkdir -p /app/media && \
-    chown celeryuser:celerygroup /app/media
-
-# Копируем файлы проекта
+# 4. Копируем файлы проекта с правильными правами
 COPY --chown=celeryuser:celerygroup . /app
 
-# Устанавливаем права для скриптов
+# 5. Устанавливаем права для скриптов
 RUN chmod +x /app/wait-for-db.sh
 
-# Переключаемся на пользователя celeryuser
+# 6. Переключаемся на пользователя celeryuser
 USER celeryuser
 WORKDIR /app
 
-# Настраиваем окружение
+# 7. Настраиваем окружение
 ENV PATH="/home/celeryuser/.local/bin:${PATH}"
 
-# Устанавливаем Poetry и зависимости
+# 8. Устанавливаем зависимости (выберите ОДИН вариант!)
+
+# Вариант A: Только poetry
 RUN pip install --user poetry && \
     poetry config virtualenvs.create false && \
     poetry install --no-root --only main
 
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+# ИЛИ Вариант B: Только requirements.txt
+# COPY requirements.txt .
+# RUN pip install --user -r requirements.txt
 
+# 9. Экспозим порт и запускаем
 EXPOSE 8000
 
 CMD ["sh", "-c", "python manage.py collectstatic --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:8000"]
