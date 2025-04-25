@@ -2,7 +2,6 @@ FROM python:3.12
 
 WORKDIR /app
 
-RUN groupadd -r celeryuser && useradd -r -g celeryuser celeryuser
 RUN adduser --disabled-password --gecos '' celeryuser
 
 RUN apt-get update \
