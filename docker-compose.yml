@@ -51,11 +51,12 @@ services:
 
   celery_worker:
     build: .
-    command: celery -A config worker --uid=1000 --gid=1000 -l INFO
+    command: celery -A config worker --loglevel=INFO
     env_file:
       - .env
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
     depends_on:
       - redis
       - db
@@ -67,6 +68,9 @@ services:
     command: celery -A config beat --loglevel=info
     env_file:
       - .env
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
     depends_on:
       - redis
       - db
