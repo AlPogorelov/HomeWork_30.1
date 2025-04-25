@@ -30,13 +30,13 @@ ENV PATH="/home/celeryuser/.local/bin:${PATH}"
 # 8. Устанавливаем зависимости (выберите ОДИН вариант!)
 
 # Вариант A: Только poetry
-RUN pip install --user poetry && \
-    poetry config virtualenvs.create false && \
-    poetry install --no-root --only main
+# RUN pip install --user poetry && \
+#     poetry config virtualenvs.create false && \
+#     poetry install --no-root --only main
 
-# ИЛИ Вариант B: Только requirements.txt
-# COPY requirements.txt .
-# RUN pip install --user -r requirements.txt
+
+COPY requirements.txt .
+RUN pip install --user -r requirements.txt
 
 # 9. Экспозим порт и запускаем
 EXPOSE 8000
