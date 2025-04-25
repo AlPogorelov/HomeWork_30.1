@@ -1,6 +1,11 @@
 FROM python:3.12
 
+RUN adduser --disabled-password --gecos '' celeryuser
+USER celeryuser
+
 WORKDIR /app
+
+COPY --chown=celeryuser:celeryuser . .
 
 RUN adduser --disabled-password --gecos '' celeryuser
 

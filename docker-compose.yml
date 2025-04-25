@@ -55,7 +55,7 @@ services:
 
   celery_worker:
     build: .
-    command: celery -A config worker --loglevel=INFO --uid=1000  # Запуск от непривилегированного пользователя
+    command: celery -A config worker --loglevel=INFO  # Запуск от непривилегированного пользователя
     env_file:
       - .env
     environment:
