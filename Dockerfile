@@ -1,44 +1,40 @@
 FROM python:3.12
 
+# Установка системных зависимостей
+USER root
+RUN apt-get update && \
+    apt-get install -y gcc libpq-dev && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Создание пользователя (ОДИН РАЗ)
 RUN adduser --disabled-password --gecos '' celeryuser
-USER celeryuser
 
 WORKDIR /app
 
-COPY --chown=celeryuser:celeryuser . .
-
-RUN adduser --disabled-password --gecos '' celeryuser
-
-RUN apt-get update \
-    && apt-get install -y gcc libpq-dev \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN pip install poetry
-
-COPY pyproject.toml poetry.lock ./
-
-RUN poetry config virtualenvs.create false && poetry install --no-root
-
+# Копирование зависимостей отдельным слоем для кэширования
+COPY --chown=celeryuser:celeryuser pyproject.toml poetry.lock ./
 COPY requirements.txt ./
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# Установка Poetry и зависимостей
+RUN pip install poetry && \
+    poetry config virtualenvs.create false && \
+    poetry install --no-root --only main
 
-COPY wait-for-db.sh /app/wait-for-db.sh
+# Копирование остальных файлов
+COPY --chown=celeryuser:celeryuser . .
 
+# Настройка прав
+RUN chmod +x /app/wait-for-db.sh && \
+    mkdir -p /app/media && \
+    chown celeryuser:celeryuser /app/media
 
-RUN chmod +x /app/wait-for-db.sh
-
-
-
-RUN mkdir -p /app/media
+# Переключаемся на непривилегированного пользователя
+USER celeryuser
 
 EXPOSE 8000
 
-USER celeryuser
-
-CMD ["celery", "-A", "config", "worker", "-l", "INFO"]
-
-CMD ["sh", "-c", "python manage.py collectstatic -- noinput && gunicorn config.wsgi:application --bind 0.0.0.0:8000"]
+# ОДНА команда CMD
+CMD ["sh", "-c", "python manage.py collectstatic --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:8000"]
