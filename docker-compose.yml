@@ -45,13 +45,18 @@ services:
       - backend_network
 
   redis:
-    image: redis:alpine
-    networks:
-      - backend_network
+    image: redis
+    expose:
+      - "6379"
+    env_file:
+      - .env
+    volumes:
+      - redis_data:/data
 
   celery_worker:
     build: .
     command: celery -A config worker --loglevel=INFO
+
     env_file:
       - .env
     environment:
@@ -84,3 +89,4 @@ networks:
 volumes:
   postgres_data:
   static_volume:
+  redis_data:
