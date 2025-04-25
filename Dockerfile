@@ -34,6 +34,9 @@ RUN pip install --user poetry && \
     poetry config virtualenvs.create false && \
     poetry install --no-root --only main
 
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
 EXPOSE 8000
 
 CMD ["sh", "-c", "python manage.py collectstatic --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:8000"]
