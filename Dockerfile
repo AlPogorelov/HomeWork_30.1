@@ -3,38 +3,33 @@ FROM python:3.12
 # Установка системных зависимостей от root
 USER root
 
-RUN pip install --user poetry && \
-    poetry config virtualenvs.create false && \
-    poetry lock --no-update && \
-    poetry install --no-root --only main
-
 RUN apt-get update && \
     apt-get install -y gcc libpq-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Создаем группу и пользователя с явным UID/GID
+# Создаем группу и пользователя
 RUN groupadd -g 1000 celerygroup && \
     useradd --uid 1000 --gid 1000 --create-home --shell /bin/bash celeryuser
 
-# Создаем директории и настраиваем права
+# Настраиваем рабочие директории
 RUN mkdir -p /app/media && \
     chown celeryuser:celerygroup /app/media
 
-# Копируем файлы с правильным владельцем
+# Копируем файлы проекта
 COPY --chown=celeryuser:celerygroup . /app
 
-# Настраиваем права для скриптов
+# Устанавливаем права для скриптов
 RUN chmod +x /app/wait-for-db.sh
 
-# Переключаемся на непривилегированного пользователя
+# Переключаемся на пользователя celeryuser
 USER celeryuser
-
-# Устанавливаем Poetry в пользовательский каталог и добавляем в PATH
-ENV PATH="/home/celeryuser/.local/bin:${PATH}"
 WORKDIR /app
 
-# Установка зависимостей через Poetry
+# Настраиваем окружение
+ENV PATH="/home/celeryuser/.local/bin:${PATH}"
+
+# Устанавливаем Poetry и зависимости
 RUN pip install --user poetry && \
     poetry config virtualenvs.create false && \
     poetry install --no-root --only main
