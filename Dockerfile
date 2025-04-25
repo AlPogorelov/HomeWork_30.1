@@ -3,6 +3,11 @@ FROM python:3.12
 # Установка системных зависимостей от root
 USER root
 
+RUN pip install --user poetry && \
+    poetry config virtualenvs.create false && \
+    poetry lock --no-update && \
+    poetry install --no-root --only main
+
 RUN apt-get update && \
     apt-get install -y gcc libpq-dev && \
     apt-get clean && \
