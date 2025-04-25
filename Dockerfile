@@ -1,4 +1,4 @@
-ROM python:3.12
+FROM python:3.12
 
 # 1. Создаем пользователя и группу ПЕРВЫМ ДЕЛОМ
 RUN groupadd -g 1000 celerygroup && \
