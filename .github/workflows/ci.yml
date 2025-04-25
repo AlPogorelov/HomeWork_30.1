@@ -112,6 +112,6 @@ jobs:
           cd /var/HomeWork_30.1/
           git checkout feature/Docker_init
           git pull
-          sysctl vm.overcommit_memory = 1
+          docker-compose down
           docker-compose up --build
           EOF
