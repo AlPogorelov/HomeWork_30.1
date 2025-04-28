@@ -1,7 +1,7 @@
 services:
   web:
     build: .
-    command: sh -c "/app/wait-for-db.sh && python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:8000"
+    command: sh -c "python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:8000"
     volumes:
       - static_volume:/app/staticfiles
     env_file:
@@ -14,8 +14,7 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
-    networks:
-      - backend_network
+
 
   nginx:
     build: ./nginx
@@ -25,15 +24,12 @@ services:
       - static_volume:/app/staticfiles
     depends_on:
       - web
-    networks:
-      - backend_network
+
 
   db:
     image: postgres:16
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    env_file:
+      - .env
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -41,8 +37,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    networks:
-      - backend_network
+
 
   redis:
     image: redis
@@ -53,16 +48,14 @@ services:
       interval: 5s
       timeout: 3s
       retries: 3
-    command: redis-server --vm.overcommit_memory=1
     volumes:
       - redis_data:/data
-    networks:
-      - backend_network
+
+
 
   celery_beat:
     build: .
-    command: celery -A config beat --loglevel=info -s /var/run/celery/celerybeat-schedule
-    user: "1000:1000"
+    command: celery -A config beat --loglevel=info
     env_file: .env
     volumes:
       - ./celery_beat:/app/celery_beat
@@ -73,15 +66,13 @@ services:
   celery_worker:
     build: .
     command: celery -A config worker --loglevel=INFO
-    user: "1000:1000"
     env_file: .env
     depends_on:
       - redis
       - db
 
 networks:
-  backend_network:
-    driver: bridge
+  default:
 
 volumes:
   postgres_data:
