@@ -117,6 +117,6 @@ jobs:
           cd /var/www/HomeWork_30.1/
           sudo git checkout feature/Docker_init
           sudo git pull
-          sudo docker compose down
+          sudo docker compose down || True
           sudo docker compose up --build
           EOF
