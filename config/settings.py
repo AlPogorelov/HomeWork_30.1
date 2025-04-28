@@ -175,8 +175,8 @@ CACHES = {
 }
 
 CSRF_TRUSTED_ORIGINS = [
-    f"http://{os.getenv("SERVER_IP")}",
-    f"https://{os.getenv("SERVER_IP")}",
+    f'http://{os.getenv("SERVER_IP")}',
+    f'https://{os.getenv("SERVER_IP")}',
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
