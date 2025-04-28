@@ -117,6 +117,13 @@ jobs:
           cd /var/www/HomeWork_30.1/
           sudo git checkout feature/Docker_init
           sudo git pull
+          if [ -d "static" ]; then
+            echo "Static folder exists."
+            else
+            echo "Static folder does not exist. Creating it now."
+            mkdir static
+            fi
+          sudo sysctl vm.overcommit_memory=1
           sudo docker compose down || True
           sudo docker compose up --build
           EOF
