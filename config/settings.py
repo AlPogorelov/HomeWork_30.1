@@ -174,6 +174,17 @@ CACHES = {
     }
 }
 
+CORS_ALLOWED_ORIGINS = [
+    f"http://{os.getenv("SERVER_IP")}",
+    f"https://{os.getenv("SERVER_IP")}",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    f"http://{os.getenv("SERVER_IP")}",
+    f"https://{os.getenv("SERVER_IP")}",
+]
+
+CORS_ALLOW_ALL_ORIGINS = False
 # Настройки для Celery
 
 # URL-адрес брокера сообщений
