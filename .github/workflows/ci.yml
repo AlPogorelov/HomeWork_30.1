@@ -51,6 +51,11 @@ jobs:
 
     env:
       SECRET_KEY: ${{secrets.SECRET_KEY}}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: test_db
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: 5432
 
     steps:
       - name: Check out code
