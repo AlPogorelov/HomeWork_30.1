@@ -1,85 +1,80 @@
 services:
   web:
     build: .
-    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    command: sh -c "python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:8000"
     volumes:
-      - .:/app
-      - static_volume:/app/static
+      - static_volume:/app/staticfiles
     env_file:
       - .env
-    ports:
-      - "8000:8000"
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
     depends_on:
       db:
         condition: service_healthy
       redis:
         condition: service_started
-    networks:
-      - backend_network
+
 
   nginx:
-    build:
-      context: ./nginx
+    build: ./nginx
     ports:
       - "80:80"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - static_volume:/app/staticfiles
     depends_on:
       - web
-    env_file:
-      - .env
+
 
   db:
     image: postgres:16
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    env_file:
+      - .env
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    env_file:
-      - .env
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
-      interval: 30s
-      timeout: 10s
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
+      interval: 10s
+      timeout: 5s
       retries: 5
-    networks:
-      - backend_network
+
 
   redis:
-    image: redis:alpine
-    networks:
-      - backend_network
+    image: redis
+    expose:
+      - "6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    volumes:
+      - redis_data:/data
 
-  celery_worker:
-    build: .
-    command: celery -A config worker --loglevel=info
-    env_file:
-      - .env
-    depends_on:
-      - web
-      - redis
-    networks:
-      - backend_network
+
 
   celery_beat:
     build: .
     command: celery -A config beat --loglevel=info
-    env_file:
-      - .env
+    env_file: .env
+    volumes:
+      - ./celery_beat:/app/celery_beat
     depends_on:
-      - web
       - redis
-    networks:
-      - backend_network
+      - db
+
+  celery_worker:
+    build: .
+    command: celery -A config worker --loglevel=INFO
+    env_file: .env
+    depends_on:
+      - redis
+      - db
 
 networks:
-  backend_network:
-    driver: bridge
+  default:
 
 volumes:
   postgres_data:
   static_volume:
-  redis_volume:
+  redis_data:

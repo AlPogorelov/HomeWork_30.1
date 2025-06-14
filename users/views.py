@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from django_filters.rest_framework import DjangoFilterBackend
 from users.serializers import PaymentsSerializer
@@ -28,7 +28,6 @@ class PaymentsCreateAPIView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         payment = serializer.save(users=self.request.user)
-        product = payment.peid_materials
         price = create_stripe_price(payment.payment_amount)
         session_id, link_pay = create_stripe_session(price)
         payment.session_id = session_id

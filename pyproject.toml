@@ -10,6 +10,7 @@ packages = [{include = "homework_30"}]
 python = "^3.12"
 python-dotenv = "^1.0.1"
 django-filter = "^25.1"
+celery = "^5.4.0"
 
 
 [build-system]

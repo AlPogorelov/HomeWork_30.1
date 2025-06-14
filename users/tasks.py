@@ -39,7 +39,7 @@ def send_course_update_email(course_id):
                 fail_silently=False
             )
 
-    except Exception as e:
+    except Exception:
 
         raise
 
@@ -62,6 +62,6 @@ def check_inactive_users(inactive_days=30):
 
         return f"Успешно заблокировано {count} пользователей"
 
-    except Exception as e:
+    except Exception:
 
         raise
