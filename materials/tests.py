@@ -185,3 +185,4 @@ class SubscriptionTests(APITestCase):
 
         # Проверяем, что возвращается ошибка 404
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+

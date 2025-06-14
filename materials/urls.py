@@ -3,6 +3,7 @@ from .apps import MaterialsConfig
 from .views import (LessonCreateAPIView, LessonListAPIView, LessonRetrieveAPIView, LessonUpdateAPIView,
                     LessonDestroyAPIView)
 
+
 app_name = MaterialsConfig.name
 
 

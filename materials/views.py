@@ -5,6 +5,7 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
 
+
 class LessonCreateAPIView(generics.CreateAPIView):
     serializer_class = LessonSerializer
     permission_classes = [IsAuthenticated & NotStaff]
@@ -13,6 +14,7 @@ class LessonCreateAPIView(generics.CreateAPIView):
         new_lesson = serializer.save()
         new_lesson.owner = self.request.user
         new_lesson.save()
+
 
 
 class LessonListAPIView(generics.ListAPIView):
@@ -24,6 +26,7 @@ class LessonRetrieveAPIView(generics.RetrieveAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     permission_classes = [IsAuthenticated & (IsOwnerOrModer | IsOwner)]
+
 
 
 class LessonUpdateAPIView(generics.UpdateAPIView):

@@ -1,5 +1,4 @@
 from rest_framework import serializers
-
 from users.models import Subscription
 from .models import Lesson
 from .validators import MaterialsValidators
@@ -18,3 +17,4 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subscription
         fields = '__all__'
+        

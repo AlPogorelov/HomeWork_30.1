@@ -1,3 +1,4 @@
+
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import permissions
@@ -18,9 +19,11 @@ schema_view = get_schema_view(
    permission_classes=(permissions.AllowAny,),
 )
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('course/', include('courses.urls', namespace='course')),
+
     path('users/', include('users.urls', namespace='users')),
     path('materials/', include('materials.urls', namespace='materials')),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
