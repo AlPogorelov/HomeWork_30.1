@@ -1,0 +1,25 @@
+
+[
+    {
+        "model": "users.payments",
+        "pk": 1,
+        "fields": {
+            "user": 1,
+            "date_pay": "2024-02-24T10:30:00",
+            "peid_materials": 1,
+            "payment_amount": 1500.50,
+            "payment_method": "Cash"
+        }
+    },
+    {
+        "model": "users.payments",
+        "pk": 2,
+        "fields": {
+            "user": 2,
+            "date_pay": "2024-02-25T15:45:00",
+            "peid_materials": 2,
+            "payment_amount": 2000.75,
+            "payment_method": "Transfer"
+        }
+    }
+]
